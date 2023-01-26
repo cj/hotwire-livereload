@@ -8,6 +8,7 @@ module Hotwire
       isolate_namespace Hotwire::Livereload
       config.hotwire_livereload = ActiveSupport::OrderedOptions.new
       config.hotwire_livereload.listen_paths ||= []
+      config.hotwire_livereload.listen_file_type_regex ||= /\.(e?rb|haml|slim)$/ 
       config.hotwire_livereload.force_reload_paths ||= []
       config.hotwire_livereload.reload_method = :action_cable
       config.hotwire_livereload.disable_default_listeners = false
@@ -53,7 +54,7 @@ module Hotwire
           force_reload_paths = options.force_reload_paths.map(&:to_s).uniq.join("|")
 
           # Only listen for changes on erb or rb files, as Vite hot reloads all JS/CSS
-          @listener = Listen.to(*listen_paths, only: /\.e?rb$/) do |modified, added, removed|
+          @listener = Listen.to(*listen_paths, only: options.listen_file_type_regex) do |modified, added, removed|
             unless File.exist?(DISABLE_FILE)
               changed = [modified, removed, added].flatten.uniq
               return unless changed.any?
