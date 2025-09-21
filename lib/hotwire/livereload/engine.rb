@@ -53,7 +53,6 @@ module Hotwire
           listen_paths = options.listen_paths.map(&:to_s).uniq
           force_reload_paths = options.force_reload_paths.map(&:to_s).uniq.join("|")
 
-          # Only listen for changes on erb or rb files, as Vite hot reloads all JS/CSS
           @listener = Listen.to(*listen_paths, only: options.listen_file_type_regex) do |modified, added, removed|
             unless File.exist?(DISABLE_FILE)
               changed = [modified, removed, added].flatten.uniq
